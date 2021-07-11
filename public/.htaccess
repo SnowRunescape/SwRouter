@@ -1,0 +1,16 @@
+# Habilita o modulo Rewrite
+RewriteEngine On
+
+# Não listar o que tem dentro de um diretorio
+Options -Indexes
+
+#Indica qual é a pasta base de todo o conteudo
+RewriteBase /
+
+# Verifica se a url digitada é um arquivo caso seja para aqui
+RewriteCond %{REQUEST_FILENAME} !-f
+
+# Verifica se a url digitada é uma pasta caso seja para aqui
+RewriteCond %{REQUEST_FILENAME} !-d
+
+RewriteRule ^(.*)$ index.php [L,QSA]
