@@ -5,8 +5,9 @@ use App\Exceptions\RouterException;
 
 class Router
 {
-    private static $routes = [];
     private static Request $request;
+    private static $routes = [];
+    private static $domain = "*";
 
     public static function get($path, $params)
     {
@@ -26,6 +27,15 @@ class Router
     public static function delete($path, $params)
     {
         return Router::saveRoute("DELETE", $path, $params);
+    }
+
+    public static function group($paramas, $callable)
+    {
+        Router::$domain = $paramas["domain"];
+
+        $callable();
+
+        Router::$domain = "*";
     }
 
     public static function dispatch()
@@ -83,11 +93,17 @@ class Router
     {
         $routes = [];
 
-        if (!array_key_exists($_SERVER['REQUEST_METHOD'], Router::$routes)) {
-            return false;
+        if (array_key_exists($_SERVER['HTTP_HOST'], Router::$routes)) {
+            $routes = array_merge($routes, Router::$routes[$_SERVER['HTTP_HOST']]);
         }
 
-        $routes = array_merge($routes, Router::$routes[$_SERVER['REQUEST_METHOD']]);
+        if (array_key_exists($_SERVER['REQUEST_METHOD'], $routes)) {
+            $routes = array_merge($routes, $routes[$_SERVER['REQUEST_METHOD']]);
+        }
+        
+        if (array_key_exists("*", Router::$routes) && array_key_exists($_SERVER['REQUEST_METHOD'], Router::$routes["*"])) {
+            $routes = array_merge(Router::$routes["*"][$_SERVER['REQUEST_METHOD']], $routes);
+        }
 
         $url = Router::getPath(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
 
@@ -110,7 +126,7 @@ class Router
 
         $route = new Route($controller);
 
-        Router::$routes[$method][$path] = $route;
+        Router::$routes[Router::$domain][$method][$path] = $route;
 
         return $route;
     }
