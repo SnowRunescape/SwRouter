@@ -13,6 +13,7 @@ class BaseController
     ];
 
     private static $template;
+    private static $title;
     private $view;
 
     public function render($path, $params = [])
@@ -82,9 +83,13 @@ class BaseController
     private function template()
     {
         if (!empty(BaseController::$template)) {
-            $template = BaseController::$template;
-            $template = file_get_contents(BaseController::getPath($template));
-            
+            ob_start();
+            include BaseController::getPath(BaseController::$template);
+            $template = ob_get_clean();
+
+            $title = BaseController::$title ?? "{{title}}";
+
+            $template = str_replace("{{title}}", $title, $template);
             $this->view = str_replace("{{body}}", $this->view, $template);
         }
     }
