@@ -8,6 +8,7 @@ class Router
     private static Request $request;
     private static $routes = [];
     private static $domain = "*";
+    private static $middlewares = [];
 
     public static function get($path, $params)
     {
@@ -31,11 +32,21 @@ class Router
 
     public static function group($params, $callable)
     {
-        Router::$domain = $params["domain"];
+        $t_domain = Router::$domain;
+        $t_middlewares = Router::$middlewares;
+
+        if (isset($params["domain"])) {
+            Router::$domain = $params["domain"];
+        }
+
+        if (isset($params["middleware"])) {
+            Router::$middlewares = array_merge(Router::$middlewares, $params["middleware"]);
+        }
 
         $callable();
 
-        Router::$domain = "*";
+        Router::$domain = $t_domain;
+        Router::$middlewares = $t_middlewares;
     }
 
     public static function dispatch()
@@ -125,6 +136,12 @@ class Router
         $path = Router::getPath($path);
 
         $route = new Route($controller);
+
+        if (Router::$middlewares) {
+            foreach (Router::$middlewares as $middleware) {
+                $route->middleware($middleware);
+            }
+        }
 
         Router::$routes[Router::$domain][$method][$path] = $route;
 
