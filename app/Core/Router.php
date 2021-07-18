@@ -84,7 +84,7 @@ class Router
                     throw new RouterException("Route not found", 404);
                 }
 
-                call_user_func([$class, "__invoke"], Router::$request);
+                call_user_func([$class, "__invoke"], Router::$request, null);
             }
         }
     }
@@ -93,19 +93,19 @@ class Router
     {
         $routes = [];
 
-        if (array_key_exists($_SERVER['HTTP_HOST'], Router::$routes)) {
-            $routes = array_merge($routes, Router::$routes[$_SERVER['HTTP_HOST']]);
+        if (array_key_exists($_SERVER["HTTP_HOST"], Router::$routes)) {
+            $routes = array_merge($routes, Router::$routes[$_SERVER["HTTP_HOST"]]);
         }
 
-        if (array_key_exists($_SERVER['REQUEST_METHOD'], $routes)) {
-            $routes = array_merge($routes, $routes[$_SERVER['REQUEST_METHOD']]);
+        if (array_key_exists($_SERVER["REQUEST_METHOD"], $routes)) {
+            $routes = array_merge($routes, $routes[$_SERVER["REQUEST_METHOD"]]);
         }
         
-        if (array_key_exists("*", Router::$routes) && array_key_exists($_SERVER['REQUEST_METHOD'], Router::$routes["*"])) {
-            $routes = array_merge(Router::$routes["*"][$_SERVER['REQUEST_METHOD']], $routes);
+        if (array_key_exists("*", Router::$routes) && array_key_exists($_SERVER["REQUEST_METHOD"], Router::$routes["*"])) {
+            $routes = array_merge(Router::$routes["*"][$_SERVER["REQUEST_METHOD"]], $routes);
         }
 
-        $url = Router::getPath(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
+        $url = Router::getPath(parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH));
 
         foreach ($routes as $route_uri => $route) {
             $params = [];
@@ -133,7 +133,7 @@ class Router
 
     private static function loadRoutes()
     {
-        require_once 'Routes.php';
+        require_once "Routes.php";
     }
 
     private static function getPath($path)
