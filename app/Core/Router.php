@@ -110,7 +110,7 @@ class Router
         foreach ($routes as $route_uri => $route) {
             $params = [];
 
-            $pattern = "@^" . preg_replace("/:[a-zA-Z0-9\_\-]+/", "([a-zA-Z0-9\-\_]+)", $route_uri) . "$@D";
+            $pattern = "@^" . preg_replace("/:[a-zA-Z0-9\_\-.]+/", "([a-zA-Z0-9\-\_.]+)", $route_uri) . "$@D";
 
             if (preg_match($pattern, $url, $params)) {
                 return $route;
