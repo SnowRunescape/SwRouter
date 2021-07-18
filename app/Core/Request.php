@@ -7,4 +7,9 @@ class Request implements \App\Interfaces\Request
     {
         exit(header("Location: {$url}"));
     }
+
+    public function session()
+    {
+        return Session::getInstance();
+    }
 }
