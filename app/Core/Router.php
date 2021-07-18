@@ -54,7 +54,7 @@ class Router
         $method = $controller[1] ?? "index";
 
         if (!class_exists($classname)) {
-            throw new RouterException("Route not found", 404);
+            throw new RouterException("Route {$classname} not found", 404);
         }
 
         $controller = new $classname();
