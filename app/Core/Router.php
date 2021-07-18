@@ -29,9 +29,9 @@ class Router
         return Router::saveRoute("DELETE", $path, $params);
     }
 
-    public static function group($paramas, $callable)
+    public static function group($params, $callable)
     {
-        Router::$domain = $paramas["domain"];
+        Router::$domain = $params["domain"];
 
         $callable();
 
