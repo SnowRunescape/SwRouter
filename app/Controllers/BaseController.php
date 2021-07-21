@@ -79,7 +79,12 @@ class BaseController
             BaseController::$template = $path;
         }
     }
-    
+
+    public static function setTitle($title)
+    {
+        BaseController::$title = $title;
+    }
+
     private function template()
     {
         if (!empty(BaseController::$template)) {
@@ -125,11 +130,13 @@ class BaseController
     private function initParams($params = [])
     {
         $params = array_merge([
-            "template" => "",
+            "template" => null,
+            "title" => null,
             "params" => []
         ], $params);
 
         BaseController::setTemplate($params["template"]);
+        BaseController::setTitle($params["title"]);
 
         foreach ($params["params"] as $key => $value) {
             $this->$key = $value;
