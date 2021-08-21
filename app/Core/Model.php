@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Core;
 
 abstract class Model
@@ -31,6 +32,12 @@ abstract class Model
         $sqladd = Model::prepareInsertSql($data);
 
         $modelSQL = Database::getInstance()->prepare("INSERT INTO {$table_name} {$sqladd}");
+
+        foreach ($data as $key => $value) {
+            if (is_array($value)) {
+                $data[$key] = json_encode($value, JSON_UNESCAPED_UNICODE);
+            }
+        }
 
         $modelSQL->execute($data);
 
@@ -97,8 +104,14 @@ abstract class Model
         return $sql;
     }
 
-    protected static function prepareWhereSql($data)
+    protected static function prepareWhereSql(&$data)
     {
+        if (!is_array($data)) {
+            $data = [
+                static::$primary_key => $data
+            ];
+        }
+
         $keys = array_keys($data);
 
         $sql = "";
