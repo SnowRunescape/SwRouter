@@ -46,6 +46,16 @@ abstract class Model
 
     public static function update($data, $where)
     {
+        if (!is_array($where)) {
+            if (strlen($where) < 1) {
+                return false;
+            }
+
+            $where = [
+                static::$primary_key => $where
+            ];
+        }
+
         if (count($data) < 1 || count($where) < 1) {
             return false;
         }
@@ -106,12 +116,6 @@ abstract class Model
 
     protected static function prepareWhereSql(&$data)
     {
-        if (!is_array($data)) {
-            $data = [
-                static::$primary_key => $data
-            ];
-        }
-
         $keys = array_keys($data);
 
         $sql = "";
