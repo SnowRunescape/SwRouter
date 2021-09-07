@@ -30,6 +30,11 @@ class Router
         return Router::saveRoute("DELETE", $path, $params);
     }
 
+    public static function any($path, $params)
+    {
+        return Router::saveRoute("ANY", $path, $params);
+    }
+
     public static function group($params, $callable)
     {
         $t_domain = Router::$domain;
@@ -111,9 +116,19 @@ class Router
         if (array_key_exists($_SERVER["REQUEST_METHOD"], $routes)) {
             $routes = array_merge($routes, $routes[$_SERVER["REQUEST_METHOD"]]);
         }
-        
-        if (array_key_exists("*", Router::$routes) && array_key_exists($_SERVER["REQUEST_METHOD"], Router::$routes["*"])) {
-            $routes = array_merge(Router::$routes["*"][$_SERVER["REQUEST_METHOD"]], $routes);
+
+        if (array_key_exists("ANY", $routes)) {
+            $routes = array_merge($routes, $routes["ANY"]);
+        }
+
+        if (array_key_exists("*", Router::$routes)) {
+            if (array_key_exists($_SERVER["REQUEST_METHOD"], Router::$routes["*"])) {
+                $routes = array_merge(Router::$routes["*"][$_SERVER["REQUEST_METHOD"]], $routes);
+            }
+
+            if (array_key_exists("ANY", Router::$routes["*"])) {
+                $routes = array_merge(Router::$routes["*"]["ANY"], $routes);
+            }
         }
 
         $url = Router::getPath(parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH));
