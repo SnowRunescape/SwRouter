@@ -21,7 +21,7 @@ class BaseController
         $this->view($path, $params);
         $this->template();
 
-        exit($this->view);
+        echo $this->view;
     }
 
     public function renderJson($mixed)
@@ -36,7 +36,7 @@ class BaseController
 
         if (is_array($mixed)) {
             $response = array_merge($response, $mixed);
-        } elseif(is_int($mixed)) {
+        } else if (is_int($mixed)) {
             $response["status"] = $mixed;
         } else {
             $response["status"] = 400;
@@ -106,6 +106,8 @@ class BaseController
         if ($viewPath === false) {
             throw new RouterException("View not found", 404);
         }
+
+        BaseController::$template = null;
 
         $this->initParams($params);
 

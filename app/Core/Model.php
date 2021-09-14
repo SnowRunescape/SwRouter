@@ -7,6 +7,17 @@ abstract class Model
     protected static $table_name;
     protected static $primary_key;
 
+    public static function all()
+    {
+        $table_name = static::$table_name;
+
+        $modelSQL = Database::getInstance()->prepare("SELECT * FROM {$table_name}");
+
+        $modelSQL->execute();
+
+        return $modelSQL->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
     public static function find($id)
     {
         $table_name = static::$table_name;

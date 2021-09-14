@@ -12,4 +12,14 @@ class Request implements \App\Interfaces\Request
     {
         return Session::getInstance();
     }
+
+    public function getHttpHost()
+    {
+        return strtolower($_SERVER["SERVER_NAME"]);
+    }
+
+    public function getHttpPath()
+    {
+        return $_SERVER["REQUEST_URI"];
+    }
 }

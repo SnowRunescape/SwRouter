@@ -5,6 +5,7 @@ class Route
 {
     public $controller;
     public $middlewares = [];
+    public $params = [];
 
     public function __construct($controller)
     {
