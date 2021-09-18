@@ -67,6 +67,8 @@ class BaseController
         $viewPath = $this->getPath($path);
 
         if ($viewPath) {
+            $this->initParams($params, true);
+
             include $viewPath;
         }
     }
@@ -129,7 +131,7 @@ class BaseController
         return file_exists($viewPath) ? $viewPath : false;
     }
 
-    private function initParams($params = [])
+    private function initParams($params = [], $onlyParams = false)
     {
         $params = array_merge([
             "template" => null,
@@ -137,8 +139,10 @@ class BaseController
             "params" => []
         ], $params);
 
-        BaseController::setTemplate($params["template"]);
-        BaseController::setTitle($params["title"]);
+        if (!$onlyParams) {
+            BaseController::setTemplate($params["template"]);
+            BaseController::setTitle($params["title"]);
+        }
 
         foreach ($params["params"] as $key => $value) {
             $this->$key = $value;
