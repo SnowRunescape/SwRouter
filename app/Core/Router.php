@@ -8,6 +8,7 @@ class Router
     private static Request $request;
     private static $routes = [];
     private static $domain = "*";
+    private static $prefix = "";
     private static $middlewares = [];
 
     public static function get($path, $params)
@@ -38,10 +39,23 @@ class Router
     public static function group($params, $callable)
     {
         $t_domain = Router::$domain;
+        $t_prefix = Router::$prefix;
         $t_middlewares = Router::$middlewares;
 
         if (isset($params["domain"])) {
             Router::$domain = $params["domain"];
+        }
+
+        if (isset($params["prefix"])) {
+            $prefix = $t_prefix;
+
+            if (!str_starts_with($params["prefix"], "/")) {
+                $params["prefix"] = "/{$params["prefix"]}";
+            }
+
+            $prefix .= $params["prefix"];
+
+            Router::$prefix = $prefix;
         }
 
         if (isset($params["middleware"])) {
@@ -51,6 +65,7 @@ class Router
         $callable();
 
         Router::$domain = $t_domain;
+        Router::$prefix = $t_prefix;
         Router::$middlewares = $t_middlewares;
     }
 
@@ -170,6 +185,16 @@ class Router
 
     private static function getPath($path)
     {
+        if (Router::$prefix != "") {
+            $prefix = Router::$prefix;
+
+            if (!str_starts_with($path, "/")) {
+                $path = "/{$path}";
+            }
+
+            $path = "{$prefix}{$path}";
+        }
+
         $path = rtrim($path, "/");
 
         return ($path == "") ? "/" : $path;
