@@ -136,7 +136,7 @@ class Router
             $routes = array_merge($routes, $routes["ANY"]);
         }
 
-        if (array_key_exists("*", Router::$routes)) {
+        if (array_key_exists("*", Router::$routes) && count($routes) == 0) {
             if (array_key_exists($_SERVER["REQUEST_METHOD"], Router::$routes["*"])) {
                 $routes = array_merge(Router::$routes["*"][$_SERVER["REQUEST_METHOD"]], $routes);
             }
