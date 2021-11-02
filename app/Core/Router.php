@@ -88,7 +88,7 @@ class Router
             throw new RouterException("Route {$classname} not found", 404);
         }
 
-        $controller = new $classname();
+        $controller = new $classname(Router::$request);
 
         if (!is_callable([$controller, $method])) {
             throw new RouterException("Route not found", 404);
