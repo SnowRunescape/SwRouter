@@ -7,6 +7,10 @@ class IndexController extends BaseController
 {
     public function index(Request $request)
     {
-        $this->render("index");
+        $this->render("index", [
+            "params" => [
+                "teste" => $request->_get->get("teste")
+            ]
+        ]);
     }
 }
