@@ -1,7 +1,10 @@
 <?php
 namespace App\Core;
 
+use App\Exceptions\HttpResponseException;
 use App\Exceptions\RouterException;
+use Symfony\Component\HttpFoundation\ParameterBag;
+use Throwable;
 
 class Router
 {
@@ -71,34 +74,42 @@ class Router
 
     public static function dispatch()
     {
-        Router::loadRoutes();
+        try {
+            Router::$request = new Request();
 
-        $route = Router::matchRoute();
+            Router::loadRoutes();
 
-        if ($route === false) {
-            throw new RouterException("Route not found", 404);
+            $route = Router::matchRoute();
+
+            if ($route === false) {
+                throw new RouterException("Route not found", 404);
+            }
+
+            Router::$request->_input = new ParameterBag($route->params);
+
+            $controller = $route->controller;
+
+            $classname = $controller[0];
+            $method = $controller[1] ?? "index";
+
+            if (!class_exists($classname)) {
+                throw new RouterException("Route {$classname} not found", 404);
+            }
+
+            $controller = new $classname();
+
+            if (!is_callable([$controller, $method])) {
+                throw new RouterException("Route not found", 404);
+            }
+
+            Router::middleware($route->middlewares);
+
+            call_user_func([$controller, $method], Router::$request);
+        } catch (RouterException | HttpResponseException $e) {
+
+        } catch (Throwable $e) {
+
         }
-
-        $controller = $route->controller;
-
-        $classname = $controller[0];
-        $method = $controller[1] ?? "index";
-
-        if (!class_exists($classname)) {
-            throw new RouterException("Route {$classname} not found", 404);
-        }
-
-        $controller = new $classname(Router::$request);
-
-        if (!is_callable([$controller, $method])) {
-            throw new RouterException("Route not found", 404);
-        }
-
-        Router::$request = new Request();
-        
-        Router::middleware($route->middlewares);
-
-        call_user_func([$controller, $method], Router::$request);
     }
 
     private static function middleware($middlewares)

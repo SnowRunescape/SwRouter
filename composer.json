@@ -6,5 +6,8 @@
     "files": [
       "app/Core/ApplicationHelper.php"
     ]
+  },
+  "require": {
+    "symfony/http-foundation": "^5.3"
   }
 }
