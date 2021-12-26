@@ -6,6 +6,7 @@ abstract class Model
 {
     protected static $table_name;
     protected static $primary_key;
+    protected static $statusKey;
 
     public static function all()
     {
@@ -27,7 +28,7 @@ abstract class Model
             $primary_key => $id
         ];
 
-        $whereadd = Model::prepareWhereSql($data);
+        $whereadd = Model::prepareWhereSql($data, static::$statusKey);
 
         $modelSQL = Database::getInstance()->prepare("SELECT * FROM {$table_name} WHERE {$whereadd}");
 
@@ -78,7 +79,7 @@ abstract class Model
         $table_name = static::$table_name;
 
         $sqladd = Model::prepareUpdateSql($data);
-        $whereadd = Model::prepareWhereSql($where);
+        $whereadd = Model::prepareWhereSql($where, static::$statusKey);
 
         $modelSQL = Database::getInstance()->prepare("UPDATE {$table_name} SET {$sqladd} WHERE {$whereadd}");
 
@@ -96,7 +97,7 @@ abstract class Model
             $primary_key => $id
         ];
 
-        $whereadd = Model::prepareWhereSql($data);
+        $whereadd = Model::prepareWhereSql($data, static::$statusKey);
 
         $modelSQL = Database::getInstance()->prepare("DELETE FROM {$table_name} WHERE {$whereadd}");
 
@@ -133,7 +134,7 @@ abstract class Model
         return $sql;
     }
 
-    protected static function prepareWhereSql(&$data)
+    protected static function prepareWhereSql(&$data, $statusKey = "")
     {
         $keys = array_keys($data);
 
@@ -145,6 +146,14 @@ abstract class Model
             }
 
             $sql .= "{$value} = :{$value}";
+        }
+
+        if ($statusKey) {
+            if ($keys) {
+                $sql .= " AND ";
+            }
+
+            $sql .= "{$statusKey} > -1";
         }
 
         return $sql;
