@@ -5,6 +5,8 @@ use App\Core\Router;
 
 use App\Controllers\BaseController;
 
+define("APPLICATION_START", microtime(true));
+
 define("APPLICATION_PATH", __DIR__ . '/../app/');
 
 BaseController::setTemplate("templates/default");
