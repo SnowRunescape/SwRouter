@@ -106,7 +106,7 @@ class BaseController
         $viewPath = BaseController::getPath($path);
 
         if ($viewPath === false) {
-            throw new RouterException("View not found", 404);
+            throw new RouterException("View {$path} not found", 404);
         }
 
         BaseController::$template = null;
