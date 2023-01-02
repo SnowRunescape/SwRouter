@@ -1,9 +1,11 @@
 <?php
-require '../vendor/autoload.php';
+
+require_once '../vendor/autoload.php';
 
 use App\Core\Router;
-
 use App\Controllers\BaseController;
+
+\Dotenv\Dotenv::createUnsafeImmutable(__DIR__)->safeLoad();
 
 define("APPLICATION_START", microtime(true));
 
