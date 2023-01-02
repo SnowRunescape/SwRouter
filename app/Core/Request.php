@@ -12,6 +12,7 @@ class Request implements \App\Interfaces\Request
     public $_post;
     public $_header;
     public $_cookie;
+    public $_input;
 
     public function __construct()
     {
@@ -38,7 +39,9 @@ class Request implements \App\Interfaces\Request
 
     public function getHttpHost()
     {
-        return strtolower($_SERVER["SERVER_NAME"]);
+        list($serverName) = explode(":", $_SERVER["HTTP_HOST"]);
+
+        return strtolower($serverName);
     }
 
     public function getHttpPath()

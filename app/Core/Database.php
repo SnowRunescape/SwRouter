@@ -1,29 +1,22 @@
 <?php
+
 namespace App\Core;
+
+use Illuminate\Database\Capsule\Manager as Capsule;
 
 class Database
 {
-    const PDO_OPTIONS = [
-        \PDO::ATTR_TIMEOUT => 5,
-        \PDO::ATTR_ERRMODE => true,
-        \PDO::ERRMODE_EXCEPTION  => true,
-    ];
-
-    private static $instance;
-
-    public static function getInstance()
+    public static function init()
     {
-        $config = Config::getInstance()->get("database");
-
-        if (is_null(Database::$instance)) {
-            Database::$instance = new \PDO(
-                "mysql:host={$config["host"]};dbname={$config["database"]};charset=utf8",
-                $config["username"],
-                $config["password"],
-                Database::PDO_OPTIONS
-            );
-        }
-
-        return Database::$instance;
+        $capsule = new Capsule;
+        $capsule->addConnection([
+           "driver" => "mysql",
+           "host" => getenv("DATABASE_HOST"),
+           "database" => getenv("DATABASE_DB"),
+           "username" => getenv("DATABASE_USERNAME"),
+           "password" => getenv("DATABASE_PASSWORD")
+        ]);
+        $capsule->setAsGlobal();
+        $capsule->bootEloquent();
     }
 }

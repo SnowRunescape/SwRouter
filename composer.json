@@ -21,6 +21,7 @@
   },
   "require": {
     "symfony/http-foundation": "^5.3",
+    "illuminate/database": "^8.83",
     "vlucas/phpdotenv": "^5.4.1"
   },
   "config": {

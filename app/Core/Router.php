@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Core;
 
 use App\Exceptions\HttpResponseException;
@@ -16,37 +17,42 @@ class Router
 
     public static function get($path, $params)
     {
-        return Router::saveRoute("GET", $path, $params);
+        return self::saveRoute("GET", $path, $params);
     }
 
     public static function post($path, $params)
     {
-        return Router::saveRoute("POST", $path, $params);
+        return self::saveRoute("POST", $path, $params);
+    }
+
+    public static function path($path, $params)
+    {
+        return self::saveRoute("PATH", $path, $params);
     }
 
     public static function put($path, $params)
     {
-        return Router::saveRoute("PUT", $path, $params);
+        return self::saveRoute("PUT", $path, $params);
     }
 
     public static function delete($path, $params)
     {
-        return Router::saveRoute("DELETE", $path, $params);
+        return self::saveRoute("DELETE", $path, $params);
     }
 
     public static function any($path, $params)
     {
-        return Router::saveRoute("ANY", $path, $params);
+        return self::saveRoute("ANY", $path, $params);
     }
 
     public static function group($params, $callable)
     {
-        $t_domain = Router::$domain;
-        $t_prefix = Router::$prefix;
-        $t_middlewares = Router::$middlewares;
+        $t_domain = self::$domain;
+        $t_prefix = self::$prefix;
+        $t_middlewares = self::$middlewares;
 
         if (isset($params["domain"])) {
-            Router::$domain = $params["domain"];
+            self::$domain = $params["domain"];
         }
 
         if (isset($params["prefix"])) {
@@ -58,34 +64,34 @@ class Router
 
             $prefix .= $params["prefix"];
 
-            Router::$prefix = $prefix;
+            self::$prefix = $prefix;
         }
 
         if (isset($params["middleware"])) {
-            Router::$middlewares = array_merge(Router::$middlewares, $params["middleware"]);
+            self::$middlewares = array_merge(self::$middlewares, $params["middleware"]);
         }
 
         $callable();
 
-        Router::$domain = $t_domain;
-        Router::$prefix = $t_prefix;
-        Router::$middlewares = $t_middlewares;
+        self::$domain = $t_domain;
+        self::$prefix = $t_prefix;
+        self::$middlewares = $t_middlewares;
     }
 
     public static function dispatch()
     {
         try {
-            Router::$request = new Request();
+            self::$request = new Request();
 
-            Router::loadRoutes();
+            self::loadRoutes();
 
-            $route = Router::matchRoute();
+            $route = self::matchRoute();
 
             if ($route === false) {
                 throw new RouterException("Route not found", 404);
             }
 
-            Router::$request->_input = new ParameterBag($route->params);
+            self::$request->_input = new ParameterBag($route->params);
 
             $controller = $route->controller;
 
@@ -102,9 +108,9 @@ class Router
                 throw new RouterException("Route not found", 404);
             }
 
-            Router::middleware($route->middlewares);
+            self::middleware($route->middlewares);
 
-            call_user_func([$controller, $method], Router::$request);
+            call_user_func([$controller, $method], self::$request);
         } catch (RouterException | HttpResponseException $e) {
 
         } catch (Throwable $e) {
@@ -119,14 +125,14 @@ class Router
                 if (!class_exists($middleware)) {
                     throw new RouterException("Middleware {$middleware} not found", 404);
                 }
-                
+
                 $class = new $middleware();
 
                 if (!is_callable([$class, "__invoke"])) {
                     throw new RouterException("Route not found", 404);
                 }
 
-                call_user_func([$class, "__invoke"], Router::$request, null);
+                call_user_func([$class, "__invoke"], self::$request, null);
             }
         }
     }
@@ -135,8 +141,8 @@ class Router
     {
         $routes = [];
 
-        if (array_key_exists($_SERVER["HTTP_HOST"], Router::$routes)) {
-            $routes = array_merge($routes, Router::$routes[$_SERVER["HTTP_HOST"]]);
+        if (array_key_exists($_SERVER["HTTP_HOST"], self::$routes)) {
+            $routes = array_merge($routes, self::$routes[$_SERVER["HTTP_HOST"]]);
         }
 
         if (array_key_exists($_SERVER["REQUEST_METHOD"], $routes)) {
@@ -147,17 +153,17 @@ class Router
             $routes = array_merge($routes, $routes["ANY"]);
         }
 
-        if (array_key_exists("*", Router::$routes) && count($routes) == 0) {
-            if (array_key_exists($_SERVER["REQUEST_METHOD"], Router::$routes["*"])) {
-                $routes = array_merge(Router::$routes["*"][$_SERVER["REQUEST_METHOD"]], $routes);
+        if (array_key_exists("*", self::$routes) && count($routes) == 0) {
+            if (array_key_exists($_SERVER["REQUEST_METHOD"], self::$routes["*"])) {
+                $routes = array_merge(self::$routes["*"][$_SERVER["REQUEST_METHOD"]], $routes);
             }
 
-            if (array_key_exists("ANY", Router::$routes["*"])) {
-                $routes = array_merge(Router::$routes["*"]["ANY"], $routes);
+            if (array_key_exists("ANY", self::$routes["*"])) {
+                $routes = array_merge(self::$routes["*"]["ANY"], $routes);
             }
         }
 
-        $url = Router::getPath(parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH));
+        $url = self::getPath(parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH));
 
         foreach ($routes as $route_uri => $route) {
             $params = [];
@@ -174,17 +180,17 @@ class Router
 
     private static function saveRoute($method, $path, $controller)
     {
-        $path = Router::getPath($path);
+        $path = self::getPath($path);
 
         $route = new Route($controller);
 
-        if (Router::$middlewares) {
-            foreach (Router::$middlewares as $middleware) {
+        if (self::$middlewares) {
+            foreach (self::$middlewares as $middleware) {
                 $route->middleware($middleware);
             }
         }
 
-        Router::$routes[Router::$domain][$method][$path] = $route;
+        self::$routes[self::$domain][$method][$path] = $route;
 
         return $route;
     }
@@ -196,8 +202,8 @@ class Router
 
     private static function getPath($path)
     {
-        if (Router::$prefix != "") {
-            $prefix = Router::$prefix;
+        if (self::$prefix != "") {
+            $prefix = self::$prefix;
 
             if (!str_starts_with($path, "/")) {
                 $path = "/{$path}";

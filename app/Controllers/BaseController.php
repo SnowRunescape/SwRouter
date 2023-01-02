@@ -1,6 +1,8 @@
 <?php
+
 namespace App\Controllers;
 
+use App\Core\Request;
 use App\Exceptions\RouterException;
 
 class BaseController
@@ -12,9 +14,15 @@ class BaseController
         500 => "Internal Server Error"
     ];
 
+    protected Request $request;
     private static $template;
     private static $title;
     private $view;
+
+    public function __construct(Request $request)
+    {
+        $this->request = $request;
+    }
 
     public function render($path, $params = [])
     {
@@ -36,7 +44,7 @@ class BaseController
 
         if (is_array($mixed)) {
             $response = array_merge($response, $mixed);
-        } else if (is_int($mixed)) {
+        } elseif (is_int($mixed)) {
             $response["status"] = $mixed;
         } else {
             $response["status"] = 400;
@@ -44,22 +52,17 @@ class BaseController
 
         if (
             empty($response["d"]) &&
-            array_key_exists($response["status"], BaseController::HTTP_RESPONSE) &&
+            array_key_exists($response["status"], self::HTTP_RESPONSE) &&
             !in_array($response["status"], [200, 201])
         ) {
             $response["d"] = [
-                "message" => BaseController::HTTP_RESPONSE[$response["status"]]
+                "message" => self::HTTP_RESPONSE[$response["status"]]
             ];
         }
 
         http_response_code($response["status"]);
 
         exit(json_encode($response["d"], JSON_UNESCAPED_UNICODE));
-    }
-
-    public function redirect($url)
-    {
-        exit(header("Location: {$url}"));
     }
 
     public function partial($path, $params = [])
@@ -75,26 +78,26 @@ class BaseController
 
     public static function setTemplate($path)
     {
-        $viewPath = BaseController::getPath($path);
+        $viewPath = self::getPath($path);
 
         if ($viewPath !== false) {
-            BaseController::$template = $path;
+            self::$template = $path;
         }
     }
 
     public static function setTitle($title)
     {
-        BaseController::$title = $title;
+        self::$title = $title;
     }
 
     private function template()
     {
-        if (!empty(BaseController::$template)) {
+        if (!empty(self::$template)) {
             ob_start();
-            include BaseController::getPath(BaseController::$template);
+            include self::getPath(self::$template);
             $template = ob_get_clean();
 
-            $title = BaseController::$title ?? "{{title}}";
+            $title = self::$title ?? "{{title}}";
 
             $template = str_replace("{{title}}", $title, $template);
             $this->view = str_replace("{{body}}", $this->view, $template);
@@ -103,13 +106,13 @@ class BaseController
 
     private function view($path, $params = [])
     {
-        $viewPath = BaseController::getPath($path);
+        $viewPath = self::getPath($path);
 
         if ($viewPath === false) {
             throw new RouterException("View {$path} not found", 404);
         }
 
-        BaseController::$template = null;
+        self::$template = null;
 
         $this->initParams($params);
 
@@ -140,8 +143,8 @@ class BaseController
         ], $params);
 
         if (!$onlyParams) {
-            BaseController::setTemplate($params["template"]);
-            BaseController::setTitle($params["title"]);
+            self::setTemplate($params["template"]);
+            self::setTitle($params["title"]);
         }
 
         foreach ($params["params"] as $key => $value) {

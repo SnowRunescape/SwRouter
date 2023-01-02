@@ -1,15 +1,16 @@
 <?php
+
 namespace App\Controllers;
 
 use App\Core\Request;
 
 class IndexController extends BaseController
 {
-    public function index(Request $request)
+    public function index()
     {
         $this->render("index", [
             "params" => [
-                "teste" => $request->_get->get("teste")
+                "teste" => $this->request->_get->get("teste")
             ]
         ]);
     }

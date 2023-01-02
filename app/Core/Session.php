@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Core;
 
 class Session
@@ -11,13 +12,13 @@ class Session
 
     public final static function getInstance()
     {
-        if (is_null(Session::$instance)) {
+        if (is_null(self::$instance)) {
             session_start();
 
-            Session::$instance = new static;
+            self::$instance = new static;
         }
 
-        return Session::$instance;
+        return self::$instance;
     }
 
     public function get($key)
