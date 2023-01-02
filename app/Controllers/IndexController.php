@@ -2,8 +2,6 @@
 
 namespace App\Controllers;
 
-use App\Core\Request;
-
 class IndexController extends BaseController
 {
     public function index()
