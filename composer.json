@@ -1,13 +1,31 @@
 {
+  "name": "snowrunescape/swrouter",
+  "description": "Base para projetos com estrutura MVC em PHP ",
+  "minimum-stability": "stable",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Bruno Caitano",
+      "email": "snowrunescape@snowdev.com.br",
+      "role": "CEO",
+      "homepage": "https://snowdev.com.br"
+    }
+  ],
   "autoload": {
     "psr-4": {
-      "App\\":"app/"
+      "App\\": "app/"
     },
     "files": [
       "app/Core/ApplicationHelper.php"
     ]
   },
   "require": {
-    "symfony/http-foundation": "^5.3"
+    "symfony/http-foundation": "^5.3",
+    "vlucas/phpdotenv": "^5.4.1"
+  },
+  "config": {
+    "optimize-autoloader": true,
+    "preferred-install": "dist",
+    "sort-packages": true
   }
 }
