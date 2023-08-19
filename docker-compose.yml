@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  php-fpm:
+    build: ./.docker/php
+    volumes:
+      - ./:/var/www
+    environment:
+      PHP_OPCACHE_VALIDATE_TIMESTAMPS: 1
+
+  nginx:
+    build: ./.docker/nginx
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./:/var/www
+    depends_on:
+      - php-fpm
+
