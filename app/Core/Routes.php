@@ -3,5 +3,8 @@
 use App\Core\Router;
 
 use App\Controllers\IndexController;
+use App\Middlewares\TesteMiddleware;
 
-Router::any("/", [IndexController::class]);
+Router::group(["middleware" => [TesteMiddleware::class]], function () {
+    Router::any("/", [IndexController::class]);
+});

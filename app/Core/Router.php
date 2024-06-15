@@ -102,13 +102,13 @@ class Router
                 throw new RouterException("Route {$classname} not found", 404);
             }
 
-            $controller = new $classname(self::$request);
-
-            if (!is_callable([$controller, $method])) {
+            if (!method_exists($classname, $method)) {
                 throw new RouterException("Route not found", 404);
             }
 
             self::middleware($route->middlewares);
+
+            $controller = new $classname(self::$request);
 
             call_user_func([$controller, $method]);
         } catch (RouterException | HttpResponseException $e) {
