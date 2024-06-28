@@ -8,7 +8,7 @@ class IndexController extends BaseController
     {
         $this->render("index", [
             "params" => [
-                "teste" => $this->request->_get->get("teste")
+                "teste" => $this->request->query->get("teste"),
             ]
         ]);
     }

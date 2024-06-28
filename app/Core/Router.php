@@ -4,6 +4,7 @@ namespace App\Core;
 
 use App\Exceptions\HttpResponseException;
 use App\Exceptions\RouterException;
+use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Throwable;
 
@@ -81,7 +82,7 @@ class Router
     public static function dispatch()
     {
         try {
-            self::$request = new Request();
+            self::$request = Request::createFromGlobals();
 
             self::loadRoutes();
 

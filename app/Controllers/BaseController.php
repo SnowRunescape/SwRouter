@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Core\Request;
+use Illuminate\Http\Request;
 use App\Exceptions\RouterException;
 
 class BaseController

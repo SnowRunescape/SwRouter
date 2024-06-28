@@ -2,12 +2,12 @@
 
 namespace App\Middlewares;
 
-use App\Core\Request;
 use Closure;
+use Illuminate\Http\Request;
 
 class TesteMiddleware
 {
-    public function __invoke(Request $request, Closure $next = null)
+public function __invoke(Request $request, Closure $next = null)
     {
         // TODO: example middleware
     }
