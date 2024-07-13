@@ -2,8 +2,8 @@
 
 namespace App\Controllers;
 
+use Exception;
 use Illuminate\Http\Request;
-use App\Exceptions\RouterException;
 
 class BaseController
 {
@@ -109,7 +109,7 @@ class BaseController
         $viewPath = self::getPath($path);
 
         if ($viewPath === false) {
-            throw new RouterException("View {$path} not found", 404);
+            throw new Exception("View {$path} not found", 404);
         }
 
         self::$template = null;
