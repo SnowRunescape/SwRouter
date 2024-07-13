@@ -14,10 +14,7 @@
   "autoload": {
     "psr-4": {
       "App\\": "app/"
-    },
-    "files": [
-      "app/Core/ApplicationHelper.php"
-    ]
+    }
   },
   "require": {
     "illuminate/database": "^8.83",

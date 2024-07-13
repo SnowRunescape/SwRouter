@@ -2,23 +2,11 @@
 
 namespace App\Core;
 
-class Session
+class Session extends Singleton
 {
-    private static $instance;
-
-    private function __construct() {}
-    private function __clone() {}
-    private function __wakeup() {}
-
-    public final static function getInstance()
+    protected function __construct()
     {
-        if (is_null(self::$instance)) {
-            session_start();
-
-            self::$instance = new static;
-        }
-
-        return self::$instance;
+        session_start();
     }
 
     public function get($key)

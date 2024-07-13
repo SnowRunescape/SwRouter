@@ -2,17 +2,15 @@
 
 require_once "../vendor/autoload.php";
 
-use App\Core\Router;
-use App\Core\Database;
-use App\Controllers\BaseController;
+use App\Core\Bootstrap;
+use Illuminate\Container\Container;
 
-\Dotenv\Dotenv::createUnsafeImmutable(__DIR__ . "/../")->safeLoad();
+Bootstrap::init();
 
-define("APPLICATION_START", microtime(true));
+$container = Container::getInstance();
 
-define("APPLICATION_PATH", __DIR__ . "/../app/");
+$router = $container->make("router");
 
-BaseController::setTemplate("templates/default");
-
-Database::init();
-Router::dispatch();
+$router->dispatch(
+    $container->make("Illuminate\Http\Request")
+)->send();

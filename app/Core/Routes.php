@@ -1,10 +1,9 @@
 <?php
 
-use App\Core\Router;
-
 use App\Controllers\IndexController;
-use App\Middlewares\TesteMiddleware;
+use App\Middlewares\TestMiddleware;
+use Illuminate\Support\Facades\Route;
 
-Router::group(["middleware" => [TesteMiddleware::class]], function () {
-    Router::any("/", [IndexController::class]);
+Route::group(["middleware" => [TestMiddleware::class]], function () {
+    Route::any("/", [IndexController::class, "index"]);
 });
