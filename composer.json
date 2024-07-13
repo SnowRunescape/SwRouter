@@ -16,7 +16,7 @@
       "App\\": "app/"
     },
     "files": [
-      "app/Core/ApplicationHelper.php"
+      "app/Helpers/ApplicationHelper.php"
     ]
   },
   "require": {
