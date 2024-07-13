@@ -9,6 +9,7 @@ use Illuminate\Events\Dispatcher;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Database\Capsule\Manager as Capsule;
+use Illuminate\Http\Request;
 
 class Bootstrap
 {
@@ -22,6 +23,7 @@ class Bootstrap
         $this->setupEnvs();
         $this->setupDatabase();
         $this->setupFacade();
+        $this->setupRequest();
         $this->setupRouter();
         $this->registerProviders();
     }
@@ -61,6 +63,13 @@ class Bootstrap
     protected function setupFacade()
     {
         Facade::setFacadeApplication($this->container);
+    }
+
+    protected function setupRequest()
+    {
+        $this->container->singleton(Request::class, function () {
+            return Request::capture();
+        });
     }
 
     protected function setupRouter()
