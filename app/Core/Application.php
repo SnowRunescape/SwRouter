@@ -56,10 +56,16 @@ class Application extends Container
         return $this->make("router");
     }
 
+    /**
+     * Register the routing services for the application.
+     *
+     * @param  array  $routes
+     * @return $this
+     */
     public function withRouting(array $routes = [])
     {
         foreach ($routes as $group => $route) {
-            $this->route()->middlewareGroup("web", []);
+            $this->route()->middlewareGroup($group, []);
 
             Route::middleware($group)->group(function () use ($route) {
                 require $route;
@@ -69,6 +75,12 @@ class Application extends Container
         return $this;
     }
 
+    /**
+     * Register the global middleware, middleware groups, and middleware aliases for the application.
+     *
+     * @param  array  $middlewareGroups
+     * @return $this
+     */
     public function withMiddleware(array $middlewareGroups = [])
     {
         foreach ($middlewareGroups as $group => $middlewares) {
