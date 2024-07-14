@@ -3,6 +3,7 @@
 namespace App\Core;
 
 use Illuminate\Container\Container;
+use Illuminate\Database\DatabaseServiceProvider;
 use Illuminate\Events\EventServiceProvider;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Router;
@@ -12,10 +13,15 @@ use Illuminate\Support\Facades\Route;
 
 class Application extends Container
 {
+    protected $bootstrappers = [
+        LoadConfiguration::class,
+    ];
+
     public function __construct()
     {
         $this->registerBaseBindings();
         $this->registerBaseServiceProviders();
+        $this->bootstrapWith($this->bootstrappers);
     }
 
     /**
@@ -44,6 +50,10 @@ class Application extends Container
     {
         (new EventServiceProvider($this))->register();
         (new RoutingServiceProvider($this))->register();
+
+        $db = new DatabaseServiceProvider($this);
+        $db->register();
+        $db->boot();
     }
 
     public static function configure()
@@ -95,6 +105,15 @@ class Application extends Container
     public function create()
     {
         return $this;
+    }
+
+    public function bootstrapWith(array $bootstrappers)
+    {
+        $this->hasBeenBootstrapped = true;
+
+        foreach ($bootstrappers as $bootstrapper) {
+            $this->make($bootstrapper)->bootstrap($this);
+        }
     }
 
     public function handleRequest(Request $request)
