@@ -15,6 +15,7 @@ class Application extends Container
 {
     protected $bootstrappers = [
         LoadConfiguration::class,
+        LoadEnvironmentVariables::class,
     ];
 
     public function __construct()
