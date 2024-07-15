@@ -1,16 +1,13 @@
 <?php
 
-require_once "../vendor/autoload.php";
+define("APPLICATION_START", microtime(true));
 
-use App\Core\Bootstrap;
-use Illuminate\Container\Container;
+define("ROOT_PATH", __DIR__ . "/../");
+define("APPLICATION_PATH", ROOT_PATH . "/app");
 
-Bootstrap::init();
+use Illuminate\Http\Request;
 
-$container = Container::getInstance();
+require_once ROOT_PATH ."/vendor/autoload.php";
 
-$router = $container->make("router");
-
-$router->dispatch(
-    $container->make("Illuminate\Http\Request")
-)->send();
+(require_once ROOT_PATH . "/bootstrap/app.php")
+    ->handleRequest(Request::capture());
